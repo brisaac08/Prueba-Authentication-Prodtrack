@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:pruebas_para_prodtrack/pages/login_page.dart';
 import 'package:pruebas_para_prodtrack/services/firebase_service.dart';
 
 class HomePage extends StatefulWidget {
@@ -62,6 +65,15 @@ class _HomePageState extends State<HomePage> {
               title: Text('Opción 2'),
               onTap: () {},
             ),
+            Spacer(),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('Cerrar sesión'),
+              onTap: () async {
+                await _firebaseService.signOut();
+                Get.offAll(() => LoginPage());
+              },
+            )
           ],
         ),
       ),

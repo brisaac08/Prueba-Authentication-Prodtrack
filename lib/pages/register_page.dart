@@ -8,7 +8,6 @@ class RegisterPage extends StatelessWidget {
   // Controladores para los nuevos campos
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -45,9 +44,6 @@ class RegisterPage extends StatelessWidget {
                 _buildTextField(context, 'Nombre', _nameController),
                 SizedBox(height: 20),
                 _buildTextField(context, 'Apellido', _lastNameController),
-                SizedBox(height: 20),
-                _buildTextField(
-                    context, 'Nombre de Usuario', _usernameController),
                 SizedBox(height: 20),
                 _buildTextField(context, 'Identificación', _idController),
                 SizedBox(height: 20),

@@ -6,7 +6,7 @@ import '../controllers/auth_controller.dart';
 class LoginPage extends StatelessWidget {
   final AuthController _authController = Get.put(AuthController());
 
-  final TextEditingController _usernameController =
+  final TextEditingController _emailController =
       TextEditingController(); //no se inicia sesion con usermane sino con email xd
   final TextEditingController _passwordController = TextEditingController();
 
@@ -39,8 +39,7 @@ class LoginPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 40),
-                _buildTextField(
-                    context, 'Nombre de usuario', _usernameController),
+                _buildTextField(context, 'Correo', _emailController),
                 SizedBox(height: 20),
                 _buildTextField(context, 'Contraseña', _passwordController,
                     obscureText: true),
@@ -120,7 +119,7 @@ class LoginPage extends StatelessWidget {
             backgroundColor: Colors.grey[700],
           ),
           onPressed: () {
-            String username = _usernameController.text.trim();
+            String username = _emailController.text.trim();
             String password = _passwordController.text.trim();
 
             _authController.login(username, password);

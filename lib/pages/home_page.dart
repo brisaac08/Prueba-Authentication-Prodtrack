@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:pruebas_para_prodtrack/pages/login_page.dart';
 import 'package:pruebas_para_prodtrack/services/firebase_service.dart';
 
@@ -36,6 +35,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.teal,
         title: Text('PRODTRACK'),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: Icon(Icons.notifications),
@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
                 await _firebaseService.signOut();
                 Get.offAll(() => LoginPage());
               },
-            )
+            ),
           ],
         ),
       ),
@@ -82,31 +82,45 @@ class _HomePageState extends State<HomePage> {
               child:
                   CircularProgressIndicator()) // Mostrar un indicador de carga
           : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Encabezado con saludo y versículo
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CircleAvatar(
-                        radius: 30,
-                        backgroundColor: Colors.grey,
-                        child:
-                            Icon(Icons.person, size: 40, color: Colors.white),
+                        radius: 40,
+                        backgroundColor: Colors.grey[300],
+                        child: Icon(Icons.person, size: 50),
                       ),
-                      SizedBox(width: 10),
-                      Text(
-                        userName != null
-                            ? 'Hola, $userName'
-                            : 'Hola', // Mostrar el nombre del usuario si está disponible
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              userName != null ? 'Hola,\n$userName' : 'Hola',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Bendito sea Jehová, mi roca,\nquien adiestra mis manos\npara la batalla, y mis dedos\npara la guerra.\n\nSalmo 144:1',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
+                // Cuatro botones
                 Expanded(
                   child: GridView.count(
                     crossAxisCount: 2,
@@ -114,10 +128,14 @@ class _HomePageState extends State<HomePage> {
                     crossAxisSpacing: 10.0,
                     mainAxisSpacing: 10.0,
                     children: [
-                      _buildGridItem(context, 'Inventario'),
-                      _buildGridItem(context, 'Ingredientes'),
-                      _buildGridItem(context, 'Proveedores'),
-                      _buildGridItem(context, 'Facturas'),
+                      menuButton(context, 'INVENTARIO', Icons.warehouse,
+                          Colors.blue, null), // Página no disponible
+                      menuButton(context, 'INGREDIENTES', Icons.filter_alt,
+                          Colors.green, null), // Página no disponible
+                      menuButton(context, 'PROVEEDORES', Icons.business,
+                          Colors.orange, null), // Página no disponible
+                      menuButton(context, 'FACTURAS', Icons.receipt, Colors.red,
+                          null), // Página no disponible
                     ],
                   ),
                 ),
@@ -126,59 +144,35 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildGridItem(BuildContext context, String title) {
+  // Widget para crear los botones del menú
+  Widget menuButton(BuildContext context, String title, IconData icon,
+      Color color, Widget? page) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OutOfServicePage(title: title),
-          ),
-        );
+        if (page != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => page),
+          );
+        } else {
+          // Mostrar un Snackbar cuando no haya página disponible
+          Get.snackbar(
+            "Página no disponible",
+            "Esta sección aún no está disponible.",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.redAccent,
+            colorText: Colors.white,
+          );
+        }
       },
       child: Card(
-        color: Colors.teal,
-        child: Center(
-          child: Text(
-            title,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// Página de "Fuera de servicio"
-class OutOfServicePage extends StatelessWidget {
-  final String title;
-
-  OutOfServicePage({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: Center(
+        color: color,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'La sección $title está fuera de servicio',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context); // Regresar a la HomePage
-              },
-              child: Text('Regresar'),
-            ),
+            Icon(icon, size: 50, color: Colors.white),
+            SizedBox(height: 10),
+            Text(title, style: TextStyle(color: Colors.white, fontSize: 18)),
           ],
         ),
       ),

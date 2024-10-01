@@ -24,24 +24,25 @@ class AuthController extends GetxController {
     _autoLogin(); // Verificar si el usuario tiene credenciales guardadas para intentar login automático.
   }
 
-  // Método para registrar al usuario con email y contraseña.
-  Future<void> register(String email, String password, String name) async {
+  // Método para registrar al usuario con email, contraseña, nombre, apellido, nombre de usuario e identificación.
+  Future<void> register(String email, String password, String name,
+      String lastName, String id) async {
     try {
       isLoading.value = true; // Indicador de carga activado.
 
       // Registrar al usuario en Firebase.
-      User? newUser =
-          await _firebaseService.registerWithEmail(email, password, name);
+      User? newUser = await _firebaseService.registerWithEmail(
+          email, password, name, lastName, id);
 
       if (newUser != null) {
-        // Actualizar el perfil del usuario con el nombre.
-        await newUser.updateDisplayName(name);
+        // Actualizar el perfil del usuario con el nombre completo (nombre y apellido).
+        await newUser.updateDisplayName('$name $lastName');
         await newUser.reload(); // Recargar los datos del usuario.
         user.value =
             FirebaseAuth.instance.currentUser; // Actualizar el usuario actual.
 
-        await _saveCredentials(
-            email, password); // Guardar las credenciales localmente.
+        // Guardar las credenciales localmente incluyendo todos los datos adicionales.
+        await _saveCredentials(email, password, name, lastName, id);
         Get.offAll(() => HomePage()); // Redirigir a la página de inicio.
       } else {
         Get.snackbar("Error", "No se pudo registrar el usuario");
@@ -63,8 +64,8 @@ class AuthController extends GetxController {
 
       if (loggedInUser != null) {
         user.value = loggedInUser; // Guardar el usuario autenticado.
-        await _saveCredentials(
-            email, password); // Guardar las credenciales localmente.
+        await _saveCredentials(email, password, "", "",
+            ""); // Guardar las credenciales localmente.
         Get.offAll(() => HomePage()); // Redirigir a la página de inicio.
       } else {
         Get.snackbar("Error", "No se pudo iniciar sesión");
@@ -85,10 +86,14 @@ class AuthController extends GetxController {
     Get.offAll(() => LoginPage()); // Redirigir a la página de login.
   }
 
-  // Guardar credenciales usando GetStorage.
-  Future<void> _saveCredentials(String email, String password) async {
+  // Guardar credenciales usando GetStorage, incluyendo nuevos datos.
+  Future<void> _saveCredentials(String email, String password, String name,
+      String lastName, String id) async {
     storage.write('email', email); // Guardar email.
     storage.write('password', password); // Guardar contraseña.
+    storage.write('name', name); // Guardar nombre.
+    storage.write('lastName', lastName); // Guardar apellido.
+    storage.write('id', id); // Guardar identificación.
   }
 
   // Intentar login automático si hay credenciales guardadas.
@@ -106,5 +111,8 @@ class AuthController extends GetxController {
   Future<void> _clearCredentials() async {
     storage.remove('email');
     storage.remove('password');
+    storage.remove('name');
+    storage.remove('lastName');
+    storage.remove('id');
   }
 }
